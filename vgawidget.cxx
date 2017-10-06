@@ -85,10 +85,21 @@ void VGAWidget::paintEvent(QPaintEvent *event)
 const int rows = height() / scaled_height(), columns = width() / scaled_width();
 QPixmap px(columns * scaled_width(), rows * scaled_height());
 uint8_t text_data[rows * columns], * t(text_data);
+
 	memset(text_data, ' ', sizeof text_data);
+	auto line = text.cbegin() + viewport_y;
+	int row = 0;
+	while (line != text.cend() && row < rows)
+	{
+		memcpy(text_data + row * columns, line->toLocal8Bit().constData() + viewport_x, std::max(std::min(line->length() - viewport_x, columns), 0));
+		++ row;
+		++ line;
+	}
+	/*
 	auto l = (text.size() > rows) ? text.cend() - rows : text.cbegin();
 	while (l != text.cend())
 		memcpy(t, l->toLocal8Bit().constData(), std::min(columns, l->size())), t += columns, ++ l;
+		*/
 
 	QPainter p(& px);
 	p.fillRect(0, 0, px.width(), px.height(), Qt::black);
@@ -107,7 +118,23 @@ uint8_t text_data[rows * columns], * t(text_data);
 
 void VGAWidget::mousePressEvent(QMouseEvent *event)
 {
-	sel_x = event->pos().x() / scaled_width();
-	sel_y = event->pos().y() / scaled_height();
+	sel_x = (mouse_press_x = event->pos().x()) / scaled_width();
+	sel_y = (mouse_press_y = event->pos().y()) / scaled_height();
 	update();
 }
+
+void VGAWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+		*(int*)0=0;
+	if (is_view_dragged)
+		*(int*)0=0;
+}
+
+/*
+void VGAWidget::mouseMoveEvent(QMouseEvent *event)
+{
+		*(int*)0=0;
+	if (is_view_dragged)
+		*(int*)0=0;
+}
+*/

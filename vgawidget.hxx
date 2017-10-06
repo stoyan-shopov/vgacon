@@ -61,24 +61,51 @@ private:
 class VGAWidget : public QWidget
 {
 	Q_OBJECT
-
 public:
 	VGAWidget(QWidget *parent = 0);
 	~VGAWidget();
 public slots:
 	void clear(void) { text.clear(); repaint(); }
-	void addLine(const QString & line) { text += line; repaint(); }
-	void setLastLine(const QString & line) { if (text.empty()) text += line; else * (text.end() - 1) = line; repaint(); }
+	void addLine(const QString & line) { text += line; greatest_text_line_length = std::max(greatest_text_line_length, line.length()); repaint(); }
+	void setLastLine(const QString & line) { if (text.empty()) text += line; else * (text.end() - 1) = line; greatest_text_line_length = std::max(greatest_text_line_length, line.length()); repaint(); }
 	void setScale(int scale) { this->scale = scale ? scale : 1; update(); }
 private:
 	int scale = 1;
 	int scaled_height(void) const { return scale * vga_font.height(); }
 	int scaled_width(void) const { return scale * vga_font.width(); }
 	int sel_x = -1, sel_y = -1;
+	int mouse_press_x, mouse_press_y;
+	bool is_view_dragged = false;
 	QStringList text;
+	int greatest_text_line_length = 0;
+	/* these hold the viewport origin (the top left corner coordinates of the viewport) that this widget currently displays;
+	 * the text lines in the 'text' list define a text view of some width and height, the viewport is
+	 * a view inside this (usually larger than can be displayed at once) text view, i.e.:
+	 *
+	 * +-----------------+ ----> overall text view
+	 * |                 |
+	 * |                 |
+	 * |    x-----+      |
+	 * |    |     |      |
+	 * |    +-----+  -----> viewport; the 'x' at the top left is the viewport origin
+	 * |                 |
+	 * |                 |
+	 * |                 |
+	 * |                 |
+	 * |                 |
+	 * |                 |
+	 * +-----------------+
+	 *
+	 *
+	 */
+	int viewport_x = 0, viewport_y = 0;
+
 protected:
-	virtual void paintEvent(QPaintEvent * event);
-	virtual void mousePressEvent(QMouseEvent * event);
+	void mouseMoveEvent(QMouseEvent * event) override;
+	void paintEvent(QPaintEvent * event) override;
+	void mousePressEvent(QMouseEvent * event) override;
+	void mouseReleaseEvent(QMouseEvent * event);
+	//void mouseMoveEvent(QMouseEvent *event) override;
 };
 
 #endif // VGAWIDGET_HXX
