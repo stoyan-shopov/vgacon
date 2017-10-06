@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>vga-font-8x12-cp1251.png</file>
+    </qresource>
+</RCC>
