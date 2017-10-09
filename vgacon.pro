@@ -37,11 +37,12 @@ SOURCES += \
     sforth/sf-opt-string.c \
     sforth/sf-arch-default.c \
     sforth.cxx \
-    vgawidget.cxx
+    vgawidget.cxx \
+    vgafont.cxx
 
 HEADERS += \
         mainwindow.hxx \
-    ../VGAWidget/vgawidget.hxx \
+    vgawidget.hxx \
     touchkeyboard.hxx \
     sforth/dictionary.h \
     sforth/enabled-words.h \
@@ -52,7 +53,8 @@ HEADERS += \
     sforth/sf-generate-prototypes.h \
     sforth/sf-generate-word-bodies.h \
     sforth/sf-word-wizard.h \
-    sforth.hxx
+    sforth.hxx \
+    vgafont.hxx
 
 FORMS += \
         mainwindow.ui
