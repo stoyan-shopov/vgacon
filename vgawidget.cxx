@@ -44,6 +44,11 @@ uint8_t text_data[rows * columns], * t(text_data);
 				    si = (i = vga_font.imageForCharacter(* t ++, (x == sel_x && y == sel_y) ? VGAFont::YELLOW : VGAFont::CYAN, VGAFont::BLACK))
 							.scaled(scaled_width(), scaled_height()));
 		}
+	QPen pen(Qt::yellow);
+	p.setPen(pen);
+	auto margin_x = (greatest_text_line_length - viewport_x) * scaled_width(), margin_y = (text.size() - viewport_y) * scaled_height();
+	p.drawLine(0, margin_y, margin_x, margin_y);
+	p.drawLine(margin_x, 0, margin_x, margin_y);
 	QPainter painter(this);
 	painter.drawPixmap(0, 0, px);
 }
