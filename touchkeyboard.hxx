@@ -18,7 +18,6 @@ private:
 protected:
 	void paintEvent(QPaintEvent *event);
 	void mousePressEvent(QMouseEvent *event);
-	void mouseMoveEvent(QMouseEvent * event) { *(int*)0=0; }
 signals:
 	void keyPressed(uint8_t character_code);
 
