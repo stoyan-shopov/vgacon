@@ -37,8 +37,9 @@ CGA	EGA	VGA	RGB	Web	Example
 		FOREGROUND_COLOR_INDEX		= 1,
 		BACKGROUND_COLOR_INDEX		= 0,
 	};
-	int width(void) { return VGA_FONT_WIDTH; }
-	int height(void) { return VGA_FONT_HEIGHT; }
+	int width(void) const { return VGA_FONT_WIDTH; }
+	int height(void) const { return VGA_FONT_HEIGHT; }
+	QRgb vgaRGBColor(unsigned palette_index) const { return color_codes[std::min(palette_index, sizeof color_codes / sizeof * color_codes - 1)]; }
 	QImage imageForCharacter(uint8_t character_code, int foreground_color_code, int background_color_code);
 private:
 	static const QRgb color_codes[COLOR_CODES_COUNT];
