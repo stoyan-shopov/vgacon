@@ -14,6 +14,7 @@ public:
 	VGAWidget(QWidget *parent = 0);
 public slots:
 	void clear(void) { text.clear(); repaint(); }
+	void setText(const QByteArray & data);
 	void addLine(const QString & line) { text += line; greatest_text_line_length = std::max(greatest_text_line_length, line.length()); repaint(); }
 	void setLastLine(const QString & line) { if (text.empty()) text += line; else * (text.end() - 1) = line; greatest_text_line_length = std::max(greatest_text_line_length, line.length()); repaint(); }
 	void setScale(int scale) { this->scale = scale ? scale : 1; update(); }

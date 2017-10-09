@@ -12,6 +12,16 @@ VGAWidget::VGAWidget(QWidget *parent)
 {
 }
 
+void VGAWidget::setText(const QByteArray &data)
+{
+	auto lines = data.split('\n');
+	text.clear();
+	greatest_text_line_length = 0;
+	for (auto l : lines)
+		text << l, greatest_text_line_length = std::max(greatest_text_line_length, l.size());
+	update();
+}
+
 void VGAWidget::paintEvent(QPaintEvent *event)
 {
 const int rows = height() / scaled_height(), columns = width() / scaled_width();
