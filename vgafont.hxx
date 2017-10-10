@@ -45,16 +45,17 @@ private:
 	static const QRgb color_codes[COLOR_CODES_COUNT];
 	enum
 	{
-		VGA_FONT_WIDTH	=	8,
-		VGA_FONT_HEIGHT	=	12,
+		VGA_FONT_WIDTH	=	9,
+		VGA_FONT_HEIGHT	=	14,
 
-		FONT_BITMAP_CHARACTER_ROWS	= 8,
-		FONT_BITMAP_CHARACTER_COLUMNS	= 32,
+		FONT_BITMAP_CHARACTER_ROWS	= 4,
+		FONT_BITMAP_CHARACTER_COLUMNS	= 64,
 		FONT_X_OFFSET			= 0,
 		FONT_Y_OFFSET			= 0,
 	};
+	const char * font_image_file_name = ":/vga-font-9x14.png";
 	/*! \todo	for some reason, initializing the font image with an in-class initializer does not work on android */
-	QImage font_image = QImage(":/vga-font-8x12-cp1251.png");
+	QImage font_image = QImage(font_image_file_name);
 } vga_font;
 
 #endif // VGAFONT_HXX

@@ -48,7 +48,7 @@ QImage VGAFont::imageForCharacter(uint8_t character_code, int foreground_color_c
 {
 	/*! \todo	for some reason, initializing the font image with an in-class initializer does not work on android */
 	if (font_image.isNull())
-		font_image = QImage(":/vga-font-8x12-cp1251.png");
+		font_image = QImage(font_image_file_name);
 #if 0
 	 /*! \todo	edit the font bitmap appropriately instead of applying fixes here */
 	if (character_code == ' ')

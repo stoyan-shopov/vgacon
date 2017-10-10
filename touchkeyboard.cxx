@@ -10,11 +10,12 @@ static const char * keypad_rows[] =
 {
 	"!@#$%^&*()",
 	"1234567890",
-	"[]{};:'\"|.",
+	"[]{}<>'\"`~",
+	"+-*/=,.;:?",
 	"qwertyuiop",
 	"asdfghjkl",
 	"zxcvbnm",
-	" \010\n|>?",
+	"|\\/",
 };
 int column, row = 0;
 QPen clip_pen(Qt::yellow);
@@ -40,18 +41,48 @@ QPainter p(& pixmap);
 	}
 	auto bottom_right_row = row - 1, bottom_right_column = column - 1;
 	/* create special keypad inputs - the 'space bar', 'enter', and 'backspace' */
-	/* create 'enter' keypad input area */
+	column = KEYPAD_ROW_GLYPH_COUNT_OPTIMIZED - 1;
+	-- row;
+	/* create 'space bar' keypad input area - the 'space bar' keypad occupies three keypad spaces */
+#if 1
+	keypads << QPair<uint8_t, QRect>(' ', t.rect().adjusted((column - 5) * t.width(), (row - 0) * t.height(), (column - 5) * t.width(), (row - 0) * t.height()));
+	keypads << QPair<uint8_t, QRect>(' ', t.rect().adjusted((column - 4) * t.width(), (row - 0) * t.height(), (column - 4) * t.width(), (row - 0) * t.height()));
+	keypads << QPair<uint8_t, QRect>(' ', t.rect().adjusted((column - 3) * t.width(), (row - 0) * t.height(), (column - 3) * t.width(), (row - 0) * t.height()));
+	QPointF space_bar_key_border[] =
+	{
+		{ pixmap.width() - 6 * t.width() - 1 + KEYPAD_BORDER_PIXELS, pixmap.height() - 1 * t.height() - 1 + KEYPAD_BORDER_PIXELS, },
+		{ pixmap.width() - 3 * t.width() - 1 - KEYPAD_BORDER_PIXELS, pixmap.height() - 1 * t.height() - 1 + KEYPAD_BORDER_PIXELS, },
+		{ pixmap.width() - 3 * t.width() - 1 - KEYPAD_BORDER_PIXELS, pixmap.height() - 0 * t.height() - 1 - KEYPAD_BORDER_PIXELS, },
+		{ pixmap.width() - 6 * t.width() - 1 + KEYPAD_BORDER_PIXELS, pixmap.height() - 0 * t.height() - 1 - KEYPAD_BORDER_PIXELS, },
+	};
+	p.drawPolygon(space_bar_key_border, sizeof space_bar_key_border / sizeof * space_bar_key_border);
+#endif
+	/* create 'enter' keypad input area - the 'enter' keypad occupies three keypad spaces */
 	keypads << QPair<uint8_t, QRect>('\n', t.rect().adjusted(column * t.width(), row * t.height(), column * t.width(), row * t.height()));
+	keypads << QPair<uint8_t, QRect>('\n', t.rect().adjusted((column - 1) * t.width(), row * t.height(), (column - 1) * t.width(), row * t.height()));
+	keypads << QPair<uint8_t, QRect>('\n', t.rect().adjusted(column * t.width(), (row - 1) * t.height(), column * t.width(), (row - 1) * t.height()));
 	QPointF return_key_border[] =
 	{
-		{ pixmap.width() - 1, pixmap.height() - 1, },
-		{ pixmap.width() - 2 * t.width() - 1, pixmap.height() - 1, },
-		{ pixmap.width() - 2 * t.width() - 1, pixmap.height() - 1 * t.height() - 1, },
-		{ pixmap.width() - 1 * t.width() - 1, pixmap.height() - 1 * t.height() - 1, },
-		{ pixmap.width() - 1 * t.width() - 1, pixmap.height() - 2 * t.height() - 1, },
-		{ pixmap.width() - 1, pixmap.height() - 2 * t.height() - 1, },
+		{ pixmap.width() - 1 - KEYPAD_BORDER_PIXELS, pixmap.height() - 1 - KEYPAD_BORDER_PIXELS, },
+		{ pixmap.width() - 2 * t.width() - 1 + KEYPAD_BORDER_PIXELS, pixmap.height() - 1 - KEYPAD_BORDER_PIXELS, },
+		{ pixmap.width() - 2 * t.width() - 1 + KEYPAD_BORDER_PIXELS, pixmap.height() - 1 * t.height() - 1 + KEYPAD_BORDER_PIXELS, },
+		{ pixmap.width() - 1 * t.width() - 1 + KEYPAD_BORDER_PIXELS, pixmap.height() - 1 * t.height() - 1 + KEYPAD_BORDER_PIXELS, },
+		{ pixmap.width() - 1 * t.width() - 1 + KEYPAD_BORDER_PIXELS, pixmap.height() - 2 * t.height() - 1 + KEYPAD_BORDER_PIXELS, },
+		{ pixmap.width() - 1 - KEYPAD_BORDER_PIXELS, pixmap.height() - 2 * t.height() - 1 + KEYPAD_BORDER_PIXELS, },
 	};
 	p.drawPolygon(return_key_border, sizeof return_key_border / sizeof * return_key_border);
+	/* create 'backspace' keypad input area - the 'backspace' keypad occupies two keypad spaces */
+	keypads << QPair<uint8_t, QRect>('\b', t.rect().adjusted((column - 1) * t.width(), (row - 1) * t.height(), (column - 1) * t.width(), (row - 1) * t.height()));
+	keypads << QPair<uint8_t, QRect>('\b', t.rect().adjusted((column - 2) * t.width(), (row - 1) * t.height(), (column - 2) * t.width(), (row - 1) * t.height()));
+	QPointF backspace_key_border[] =
+	{
+		{ pixmap.width() - 3 * t.width() - 1 + KEYPAD_BORDER_PIXELS, pixmap.height() - 2 * t.height() - 1 + KEYPAD_BORDER_PIXELS, },
+		{ pixmap.width() - 1 * t.width() - 1 - KEYPAD_BORDER_PIXELS, pixmap.height() - 2 * t.height() - 1 + KEYPAD_BORDER_PIXELS, },
+		{ pixmap.width() - 1 * t.width() - 1 - KEYPAD_BORDER_PIXELS, pixmap.height() - 1 * t.height() - 1 - KEYPAD_BORDER_PIXELS, },
+		{ pixmap.width() - 3 * t.width() - 1 + KEYPAD_BORDER_PIXELS, pixmap.height() - 1 * t.height() - 1 - KEYPAD_BORDER_PIXELS, },
+	};
+	p.drawPolygon(backspace_key_border, sizeof backspace_key_border / sizeof * backspace_key_border);
+
 	setMinimumSize(KEYPAD_WIDTH_IN_PIXELS, pixmap.height());
 }
 
