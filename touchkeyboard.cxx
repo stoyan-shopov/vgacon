@@ -8,8 +8,9 @@ TouchKeyboard::TouchKeyboard(QWidget *parent) : QWidget(parent)
 auto t = pixmapForCharacter(' ');
 static const char * keypad_rows[] =
 {
-	"`1234567890",
-	"~!@#$%^&*()",
+	"!@#$%^&*()",
+	"1234567890",
+	"[]{};:'\"|.",
 	"qwertyuiop",
 	"asdfghjkl",
 	"zxcvbnm",
@@ -18,12 +19,12 @@ static const char * keypad_rows[] =
 int column, row = 0;
 QPen clip_pen(Qt::yellow);
 
-	pixmap = QPixmap(t.width() * 20, t.height() * sizeof keypad_rows / sizeof * keypad_rows);
+	pixmap = QPixmap(t.width() * KEYPAD_ROW_GLYPH_COUNT_OPTIMIZED, t.height() * sizeof keypad_rows / sizeof * keypad_rows);
 QPainter p(& pixmap);
 
 	p.setPen(clip_pen);
 	p.fillRect(pixmap.rect(), Qt::black);
-	p.drawRect(0, 0, 720, 400);
+	p.drawRect(pixmap.rect());
 
 	for (auto chars : keypad_rows)
 	{
@@ -37,6 +38,20 @@ QPainter p(& pixmap);
 		}
 		row ++;
 	}
+	auto bottom_right_row = row - 1, bottom_right_column = column - 1;
+	/* create special keypad inputs - the 'space bar', 'enter', and 'backspace' */
+	/* create 'enter' keypad input area */
+	keypads << QPair<uint8_t, QRect>('\n', t.rect().adjusted(column * t.width(), row * t.height(), column * t.width(), row * t.height()));
+	QPointF return_key_border[] =
+	{
+		{ pixmap.width() - 1, pixmap.height() - 1, },
+		{ pixmap.width() - 2 * t.width() - 1, pixmap.height() - 1, },
+		{ pixmap.width() - 2 * t.width() - 1, pixmap.height() - 1 * t.height() - 1, },
+		{ pixmap.width() - 1 * t.width() - 1, pixmap.height() - 1 * t.height() - 1, },
+		{ pixmap.width() - 1 * t.width() - 1, pixmap.height() - 2 * t.height() - 1, },
+		{ pixmap.width() - 1, pixmap.height() - 2 * t.height() - 1, },
+	};
+	p.drawPolygon(return_key_border, sizeof return_key_border / sizeof * return_key_border);
 	setMinimumSize(KEYPAD_WIDTH_IN_PIXELS, pixmap.height());
 }
 
