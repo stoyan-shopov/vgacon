@@ -22,8 +22,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-	//sforth.terminate();
-	//sforth.wait();
 	delete ui;
 }
 
@@ -54,4 +52,10 @@ void MainWindow::on_lineEdit_returnPressed()
 {
 	vgacon_socket->write((ui->lineEdit->text() + '\n').toLocal8Bit());
 	ui->lineEdit->clear();
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+	vgacon_socket->close();
+	sforth.wait();
 }

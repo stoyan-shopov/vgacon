@@ -27,6 +27,8 @@ private slots:
 	void touchpadPressed(uint8_t character_code);
 	void socketReadyRead(void);
 	void on_lineEdit_returnPressed();
+protected:
+	void closeEvent(QCloseEvent * event);
 };
 
 #endif // MAINWINDOW_HXX

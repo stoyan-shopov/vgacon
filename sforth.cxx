@@ -9,7 +9,21 @@ static QLocalSocket * sforth_socket;
 
 extern "C"
 {
-int sfgetc(void) { char x; if (!sforth_socket->bytesAvailable()) sforth_socket->waitForReadyRead(-1); sforth_socket->read(& x, sizeof x); return (unsigned) x; }
+int sfgetc(void)
+{
+	int r;
+	char x = '?';
+	do
+	{
+	if (!sforth_socket->bytesAvailable())
+		sforth_socket->waitForReadyRead(-1);
+	}
+	while (!(r = sforth_socket->read(& x, sizeof x)));
+	if (r == -1)
+		/* error reading from the socket - maybe the connection has been closed, the sforth engine should now terminate */
+		do_bye();
+	return (unsigned) x;
+}
 int sffgetc(cell file_id) { return EOF; }
 int sfputc(int c) { sforth_socket->write((char *) & c, 1); sforth_socket->waitForBytesWritten(); return 0; }
 int sfsync(void) { sforth_socket->waitForBytesWritten(); return 0; }
