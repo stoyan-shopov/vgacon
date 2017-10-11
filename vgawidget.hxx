@@ -19,6 +19,12 @@ public slots:
 	void setLastLine(const QString & line) { if (text.empty()) text += line; else * (text.end() - 1) = line; greatest_text_line_length = std::max(greatest_text_line_length, line.length()); repaint(); }
 	void setScale(int scale) { this->scale = scale ? scale : 1; update(); }
 public:
+	enum CURSOR_TYPE
+	{
+		CURSOR_TYPE_INSERT,
+		CURSOR_TYPE_NAVIGATE,
+	};
+
 	void setLineText(int line_number, const QString & text)
 	{ /*! \todo - why doesn't this work ???
 		this->text.at(line_number) = text; */
@@ -31,9 +37,11 @@ public:
 	const QString & textAtLine(int line_number) { return text.at(line_number); }
 	void setCursorXY(int x, int y) { cursor_x = x, cursor_y = y; repaint(); }
 	int lineCount(void) { return text.size(); }
+	void setCursorType(enum CURSOR_TYPE cursor_type) { this->cursor_type = cursor_type; repaint(); }
 signals:
 	void cellSelected(int cell_x, int cell_y);
 private:
+	enum CURSOR_TYPE cursor_type = CURSOR_TYPE_NAVIGATE;
 	int scale = 1;
 	int cursor_x = -1, cursor_y = -1;
 	int scaled_height(void) const { return scale * vga_font.height(); }

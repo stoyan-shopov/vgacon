@@ -19,6 +19,13 @@ public:
 	~MainWindow();
 
 private:
+	enum EDITING_MODE
+	{
+		EDITING_MODE_COMMAND,
+		EDITING_MODE_INSERT,
+	}
+	editing_mode = EDITING_MODE_COMMAND;
+
 	Ui::MainWindow *ui;
 	QLocalServer	vgacon_server;
 	QLocalSocket	* vgacon_socket;

@@ -86,21 +86,67 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 	if (watched == ui->vgaWidget && event->type() == QEvent::KeyPress)
 	{
 		QKeyEvent * key = reinterpret_cast<QKeyEvent *>(event);
-		if (key->text() == "x")
+
+		if (key->key() == Qt::Key_Down)
+			goto cursor_down;
+		else if (key->key() == Qt::Key_Up)
+			goto cursor_up;
+		else if (key->key() == Qt::Key_Left)
+			goto cursor_left;
+		else if (key->key() == Qt::Key_Right)
+			goto cursor_right;
+		if (key->key() == Qt::Key_Escape)
+		{
+			if (editing_mode != EDITING_MODE_COMMAND)
+			{
+				editing_mode = EDITING_MODE_COMMAND;
+				ui->vgaWidget->setCursorType(VGAWidget::CURSOR_TYPE_NAVIGATE);
+				goto cursor_left;
+			}
+		}
+		else if (editing_mode == EDITING_MODE_COMMAND)
+		{
+			if (key->text() == "i")
+			{
+				editing_mode = EDITING_MODE_INSERT;
+				ui->vgaWidget->setCursorType(VGAWidget::CURSOR_TYPE_INSERT);
+			}
+			else if (key->text() == "a")
+			{
+				editing_mode = EDITING_MODE_INSERT;
+				setCursor(cursor_x + 1, cursor_y);
+				virtual_cursor_x = cursor_x;
+				ui->vgaWidget->setCursorType(VGAWidget::CURSOR_TYPE_INSERT);
+			}
+			else if (key->text() == "x")
+			{
+				auto s = ui->vgaWidget->textAtLine(cursor_y);
+				if (cursor_x < s.size())
+					s = s.remove(cursor_x, 1);
+				ui->vgaWidget->setLineText(cursor_y, s);
+				setCursor(cursor_x, cursor_y);
+				virtual_cursor_x = cursor_x;
+			}
+			else if (key->text() == "j")
+cursor_down:
+				setCursor(virtual_cursor_x, cursor_y + 1);
+			else if (key->text() == "k")
+cursor_up:
+				setCursor(virtual_cursor_x, cursor_y - 1);
+			else if (key->text() == "h")
+cursor_left:
+				setCursor(cursor_x - 1, cursor_y), virtual_cursor_x = cursor_x;
+			else if (key->text() == "l")
+cursor_right:
+				setCursor(cursor_x + 1, cursor_y), virtual_cursor_x = cursor_x;
+		}
+		else
 		{
 			auto s = ui->vgaWidget->textAtLine(cursor_y);
-			if (cursor_x < s.size())
-				s = s.remove(cursor_x, 1);
-			ui->vgaWidget->setLineText(cursor_y, s);
+			ui->vgaWidget->setLineText(cursor_y, s.insert(cursor_x, key->text()));
+			setCursor(cursor_x + 1, cursor_y);
+			virtual_cursor_x = cursor_x;
 		}
-		else if (key->text() == "j")
-			setCursor(virtual_cursor_x, cursor_y + 1);
-		else if (key->text() == "k")
-			setCursor(virtual_cursor_x, cursor_y - 1);
-		else if (key->text() == "h")
-			setCursor(cursor_x - 1, cursor_y), virtual_cursor_x = cursor_x;
-		else if (key->text() == "l")
-			setCursor(cursor_x + 1, cursor_y), virtual_cursor_x = cursor_x;
 	}
 	return false;
 }

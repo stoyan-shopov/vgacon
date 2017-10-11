@@ -55,8 +55,9 @@ uint8_t text_data[rows * columns], * t(text_data);
 							.scaled(scaled_width(), scaled_height()));
 		}
 	QPen pen(Qt::red);
+	/* draw cursor */
 	p.setPen(pen);
-	p.drawRect((cursor_x - viewport_x) * scaled_width(), (cursor_y - viewport_y) * scaled_height(), scaled_width(), scaled_height());
+	p.drawRect((cursor_x - viewport_x) * scaled_width(), (cursor_y - viewport_y) * scaled_height(), (cursor_type == CURSOR_TYPE_NAVIGATE) ? scaled_width() : 1, scaled_height());
 	pen = QPen(Qt::yellow);
 	p.setPen(pen);
 	auto margin_x = (greatest_text_line_length - viewport_x) * scaled_width(), margin_y = (text.size() - viewport_y) * scaled_height();
@@ -73,13 +74,6 @@ void VGAWidget::mousePressEvent(QMouseEvent *event)
 	emit cellSelected(sel_x, sel_y);
 	update();
 }
-
-/*
-void VGAWidget::mouseReleaseEvent(QMouseEvent *event)
-{
-		*(int*)0=0;
-}
-*/
 
 void VGAWidget::mouseMoveEvent(QMouseEvent * event)
 {
