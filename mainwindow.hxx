@@ -23,12 +23,17 @@ private:
 	QLocalServer	vgacon_server;
 	QLocalSocket	* vgacon_socket;
 	SForth		sforth;
+	int cursor_x = 0, cursor_y = 0;
+	int virtual_cursor_x = 0;
+	void setCursor(int cell_x, int cell_y);
 private slots:
 	void touchpadPressed(uint8_t character_code);
 	void socketReadyRead(void);
 	void on_lineEdit_returnPressed();
+	void cellSelected(int cell_x, int cell_y);
 protected:
 	void closeEvent(QCloseEvent * event);
+	bool eventFilter(QObject *watched, QEvent *event);
 };
 
 #endif // MAINWINDOW_HXX

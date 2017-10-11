@@ -44,7 +44,11 @@
      </widget>
     </item>
     <item>
-     <widget class="VGAWidget" name="vgaWidget" native="true"/>
+     <widget class="VGAWidget" name="vgaWidget" native="true">
+      <property name="focusPolicy">
+       <enum>Qt::ClickFocus</enum>
+      </property>
+     </widget>
     </item>
     <item>
      <widget class="TouchKeyboard" name="touchpad" native="true"/>

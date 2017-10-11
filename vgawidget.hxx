@@ -18,8 +18,24 @@ public slots:
 	void addLine(const QString & line) { text += line; greatest_text_line_length = std::max(greatest_text_line_length, line.length()); repaint(); }
 	void setLastLine(const QString & line) { if (text.empty()) text += line; else * (text.end() - 1) = line; greatest_text_line_length = std::max(greatest_text_line_length, line.length()); repaint(); }
 	void setScale(int scale) { this->scale = scale ? scale : 1; update(); }
+public:
+	void setLineText(int line_number, const QString & text)
+	{ /*! \todo - why doesn't this work ???
+		this->text.at(line_number) = text; */
+		if (line_number >= this->text.size())
+			return;
+		this->text[line_number] = text;
+		greatest_text_line_length = std::max(greatest_text_line_length, text.length());
+		repaint();
+	}
+	const QString & textAtLine(int line_number) { return text.at(line_number); }
+	void setCursorXY(int x, int y) { cursor_x = x, cursor_y = y; repaint(); }
+	int lineCount(void) { return text.size(); }
+signals:
+	void cellSelected(int cell_x, int cell_y);
 private:
 	int scale = 1;
+	int cursor_x = -1, cursor_y = -1;
 	int scaled_height(void) const { return scale * vga_font.height(); }
 	int scaled_width(void) const { return scale * vga_font.width(); }
 	int sel_x = -1, sel_y = -1;
