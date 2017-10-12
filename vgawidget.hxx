@@ -25,7 +25,7 @@ public:
 		CURSOR_TYPE_NAVIGATE,
 	};
 
-	void setLineText(int line_number, const QString & text)
+	void setLineAtIndex(const QString & text, int line_number)
 	{ /*! \todo - why doesn't this work ???
 		this->text.at(line_number) = text; */
 		if (line_number >= this->text.size())
@@ -38,7 +38,7 @@ public:
 	void setCursorXY(int x, int y) { cursor_x = x, cursor_y = y; repaint(); }
 	int lineCount(void) { return text.size(); }
 	void setCursorType(enum CURSOR_TYPE cursor_type) { this->cursor_type = cursor_type; repaint(); }
-	void insertLineAtIndex(const QString text, int index) { this->text.insert(index, text); repaint(); }
+	void insertLineAtIndex(const QString & text, int index) { this->text.insert(index, text); repaint(); }
 	void removeLineAtIndex(int index) { text.removeAt(index); }
 signals:
 	void cellSelected(int cell_x, int cell_y);

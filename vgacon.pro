@@ -38,7 +38,8 @@ SOURCES += \
     sforth/sf-arch-default.c \
     sforth.cxx \
     vgawidget.cxx \
-    vgafont.cxx
+    vgafont.cxx \
+    fakevim.cxx
 
 HEADERS += \
         mainwindow.hxx \
@@ -54,7 +55,8 @@ HEADERS += \
     sforth/sf-generate-word-bodies.h \
     sforth/sf-word-wizard.h \
     sforth.hxx \
-    vgafont.hxx
+    vgafont.hxx \
+    fakevim.hxx
 
 FORMS += \
         mainwindow.ui
