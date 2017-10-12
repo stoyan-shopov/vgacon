@@ -38,7 +38,7 @@ void FakeVim::executeCommandString(const QString &commands)
 			{
 				editing_mode = EDITING_MODE_COMMAND;
 				widget->setCursorType(widget->CURSOR_TYPE_NAVIGATE);
-				goto handle_left_arrow;
+				executeCommandString(QChar(LEFT_ARROW_CODE));
 			}
 			break;
 		}
@@ -47,9 +47,18 @@ void FakeVim::executeCommandString(const QString &commands)
 		case EDITING_MODE_INSERT:
 		{
 			auto s = widget->textAtLine(cursor_y);
-			widget->setLineAtIndex(s.insert(cursor_x, c), cursor_y);
-			setCursor(cursor_x + 1, cursor_y);
-			virtual_cursor_x = cursor_x;
+			if (c == '\n')
+			{
+				widget->setLineAtIndex(s.left(cursor_x), cursor_y);
+				widget->insertLineAtIndex(s.right(s.size() - cursor_x), cursor_y + 1);
+				executeCommandString(QChar(DOWN_ARROW_CODE));
+			}
+			else
+			{
+				widget->setLineAtIndex(s.insert(cursor_x, c), cursor_y);
+				setCursor(cursor_x + 1, cursor_y);
+				virtual_cursor_x = cursor_x;
+			}
 		}
 			break;
 		case EDITING_MODE_COMMAND:
