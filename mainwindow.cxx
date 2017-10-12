@@ -83,6 +83,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 			case Qt::Key_Right: command = QChar(fakevim->RIGHT_ARROW_CODE); break;
 		}
 		fakevim->executeCommandString(command);
+		return true;
 	}
 	return false;
 }

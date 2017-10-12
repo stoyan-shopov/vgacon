@@ -14,7 +14,7 @@ void FakeVim::setCursor(int cell_x, int cell_y)
 	cursor_x = cursor_y = -1;
 	cursor_y = std::max(std::min(cell_y, widget->lineCount() - 1), 0);
 	if (cursor_y < widget->lineCount())
-		cursor_x = std::min(cell_x, widget->textAtLine(cursor_y).size() - ((editing_mode == EDITING_MODE_COMMAND) ? 1 : 0));
+		cursor_x = std::min(cell_x, widget->lineAtIndex(cursor_y).size() - ((editing_mode == EDITING_MODE_COMMAND) ? 1 : 0));
 	cursor_x = std::max(cursor_x, 0);
 	widget->setCursorXY(cursor_x, cursor_y);
 }
@@ -46,41 +46,83 @@ void FakeVim::executeCommandString(const QString &commands)
 		{
 		case EDITING_MODE_INSERT:
 		{
-			auto s = widget->textAtLine(cursor_y);
-			if (c == '\n')
+			auto s = widget->lineAtIndex(cursor_y);
+			switch (c.cell())
 			{
+			case '\n':
 				widget->setLineAtIndex(s.left(cursor_x), cursor_y);
 				widget->insertLineAtIndex(s.right(s.size() - cursor_x), cursor_y + 1);
-				executeCommandString(QChar(DOWN_ARROW_CODE));
-			}
-			else
+				executeCommandString(QString(DOWN_ARROW_CODE) + "\x1bI");
+				break;
+			case '\b':
+				if (cursor_x)
+					executeCommandString(QString("\x1bxa") + LEFT_ARROW_CODE);
+				break;
+			case '\t':
 			{
+				QString tab_spaces(TAB_SPACES - (cursor_x & 7), ' ');
+				executeCommandString(tab_spaces);
+				break;
+			}
+			default:
 				widget->setLineAtIndex(s.insert(cursor_x, c), cursor_y);
 				setCursor(cursor_x + 1, cursor_y);
 				virtual_cursor_x = cursor_x;
+				break;
 			}
 		}
 			break;
 		case EDITING_MODE_COMMAND:
 			switch (c.cell())
 			{
+			case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
+				/* special case */
+				if (repeat_count == -1 && c == '0')
+					setCursor(0, cursor_y), virtual_cursor_x = cursor_x;
+				else
+				{
+					if (repeat_count == -1)
+						repeat_count = 0;
+					repeat_count *= 10;
+					repeat_count += c.cell() - '0';
+				}
+				break;
+			case 'J':
+				if (cursor_y < widget->lineCount() - 1)
+				{
+					//widget->setLineAtIndex(widget->lineAtIndex(cursor_y) + " "); + widget->lineAtIndex(cursor_y + 1), cursor_y);
+					widget->setLineAtIndex(widget->lineAtIndex(cursor_y) + " ", cursor_y);
+					executeCommandString("\x1b$");
+					widget->setLineAtIndex(widget->lineAtIndex(cursor_y) + widget->lineAtIndex(cursor_y + 1), cursor_y);
+					widget->removeLineAtIndex(cursor_y + 1);
+				}
+				break;
 			case 'i':
 				editing_mode = EDITING_MODE_INSERT;
 				widget->setCursorType(VGAWidget::CURSOR_TYPE_INSERT);
 				break;
+			case 'I':
+				editing_mode = EDITING_MODE_INSERT;
+				setCursor(0, cursor_y);
+				virtual_cursor_x = cursor_x;
+				widget->setCursorType(VGAWidget::CURSOR_TYPE_INSERT);
+				break;
 			case 'O':
 				editing_mode = EDITING_MODE_INSERT;
-				widget->insertLineAtIndex("\n", cursor_y);
+				widget->insertLineAtIndex("", cursor_y);
 				setCursor(0, cursor_y);
 				virtual_cursor_x = cursor_x;
 				widget->setCursorType(VGAWidget::CURSOR_TYPE_INSERT);
 				break;
 			case 'o':
 				editing_mode = EDITING_MODE_INSERT;
-				widget->insertLineAtIndex("\n", cursor_y + 1);
+				widget->insertLineAtIndex("", cursor_y + 1);
 				setCursor(0, cursor_y + 1);
 				virtual_cursor_x = cursor_x;
 				widget->setCursorType(VGAWidget::CURSOR_TYPE_INSERT);
+				break;
+			case 'A':
+				executeCommandString("$a");
 				break;
 			case 'a':
 				editing_mode = EDITING_MODE_INSERT;
@@ -90,9 +132,9 @@ void FakeVim::executeCommandString(const QString &commands)
 				break;
 			case 'x':
 			{
-				auto s = widget->textAtLine(cursor_y);
+				auto s = widget->lineAtIndex(cursor_y);
 				if (cursor_x < s.size())
-					s = s.remove(cursor_x, 1);
+					s = s.remove(cursor_x, getRepeatCount());
 				widget->setLineAtIndex(s, cursor_y);
 				setCursor(cursor_x, cursor_y);
 				virtual_cursor_x = cursor_x;
@@ -100,19 +142,23 @@ void FakeVim::executeCommandString(const QString &commands)
 				break;
 			case 'j':
 handle_down_arrow:
-				setCursor(virtual_cursor_x, cursor_y + 1);
+				setCursor(virtual_cursor_x, cursor_y + getRepeatCount());
 				break;
 			case 'k':
 handle_up_arrow:
-				setCursor(virtual_cursor_x, cursor_y - 1);
+				setCursor(virtual_cursor_x, cursor_y - getRepeatCount());
 				break;
+			case '\b':
 			case 'h':
 handle_left_arrow:
-				setCursor(cursor_x - 1, cursor_y), virtual_cursor_x = cursor_x;
+				setCursor(cursor_x - getRepeatCount(), cursor_y), virtual_cursor_x = cursor_x;
 				break;
 			case 'l':
 handle_right_arrow:
-				setCursor(cursor_x + 1, cursor_y), virtual_cursor_x = cursor_x;
+				setCursor(cursor_x + getRepeatCount(), cursor_y), virtual_cursor_x = cursor_x;
+				break;
+			case '$':
+				setCursor(widget->lineAtIndex(cursor_y).size(), cursor_y), virtual_cursor_x = cursor_x;
 				break;
 			}
 			break;

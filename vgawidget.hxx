@@ -34,12 +34,12 @@ public:
 		greatest_text_line_length = std::max(greatest_text_line_length, text.length());
 		repaint();
 	}
-	const QString & textAtLine(int line_number) { return text.at(line_number); }
+	const QString & lineAtIndex(int index) { return text.at(index); }
 	void setCursorXY(int x, int y) { cursor_x = x, cursor_y = y; repaint(); }
 	int lineCount(void) { return text.size(); }
 	void setCursorType(enum CURSOR_TYPE cursor_type) { this->cursor_type = cursor_type; repaint(); }
 	void insertLineAtIndex(const QString & text, int index) { this->text.insert(index, text); repaint(); }
-	void removeLineAtIndex(int index) { text.removeAt(index); }
+	void removeLineAtIndex(int index) { text.removeAt(index); repaint(); }
 signals:
 	void cellSelected(int cell_x, int cell_y);
 private:

@@ -17,8 +17,11 @@ private:
 	{
 		EDITING_MODE_COMMAND,
 		EDITING_MODE_INSERT,
+		TAB_SPACES	= 8,
 	}
 	editing_mode = EDITING_MODE_COMMAND;
+	int repeat_count = -1;
+	int getRepeatCount(void) { int r = repeat_count; if (r < 0) r = 1; repeat_count = -1; return r; }
 public:
 	enum
 	{
