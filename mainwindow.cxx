@@ -34,7 +34,7 @@ void MainWindow::setCursor(int cell_x, int cell_y)
 	cursor_x = cursor_y = -1;
 	cursor_y = std::max(std::min(cell_y, ui->vgaWidget->lineCount() - 1), 0);
 	if (cursor_y < ui->vgaWidget->lineCount())
-		cursor_x = std::min(cell_x, ui->vgaWidget->textAtLine(cursor_y).size() - 1);
+		cursor_x = std::min(cell_x, ui->vgaWidget->textAtLine(cursor_y).size() - ((editing_mode == EDITING_MODE_COMMAND) ? 1 : 0));
 	cursor_x = std::max(cursor_x, 0);
 	ui->vgaWidget->setCursorXY(cursor_x, cursor_y);
 }
@@ -109,6 +109,22 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 			if (key->text() == "i")
 			{
 				editing_mode = EDITING_MODE_INSERT;
+				ui->vgaWidget->setCursorType(VGAWidget::CURSOR_TYPE_INSERT);
+			}
+			else if (key->text() == "O")
+			{
+				editing_mode = EDITING_MODE_INSERT;
+				ui->vgaWidget->insertLineAtIndex("\n", cursor_y);
+				setCursor(0, cursor_y);
+				virtual_cursor_x = cursor_x;
+				ui->vgaWidget->setCursorType(VGAWidget::CURSOR_TYPE_INSERT);
+			}
+			else if (key->text() == "o")
+			{
+				editing_mode = EDITING_MODE_INSERT;
+				ui->vgaWidget->insertLineAtIndex("\n", cursor_y + 1);
+				setCursor(0, cursor_y + 1);
+				virtual_cursor_x = cursor_x;
 				ui->vgaWidget->setCursorType(VGAWidget::CURSOR_TYPE_INSERT);
 			}
 			else if (key->text() == "a")
