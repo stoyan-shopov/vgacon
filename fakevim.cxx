@@ -66,8 +66,7 @@ void FakeVim::executeCommandString(const QString &commands)
 			}
 			default:
 				widget->setLineAtIndex(s.insert(cursor_x, c), cursor_y);
-				setCursor(cursor_x + 1, cursor_y);
-				virtual_cursor_x = cursor_x;
+				setVCursor(cursor_x + 1, cursor_y);
 				break;
 			}
 		}
@@ -78,7 +77,7 @@ void FakeVim::executeCommandString(const QString &commands)
 			case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
 				/* special case */
 				if (repeat_count == -1 && c == '0')
-					setCursor(0, cursor_y), virtual_cursor_x = cursor_x;
+					setVCursor(0, cursor_y);
 				else
 				{
 					if (repeat_count == -1)
@@ -86,6 +85,24 @@ void FakeVim::executeCommandString(const QString &commands)
 					repeat_count *= 10;
 					repeat_count += c.cell() - '0';
 				}
+				break;
+			case 'w':
+			{
+				auto s = widget->lineAtIndex(cursor_y);
+				int i = cursor_x;
+				while (i < s.size() && !s.at(i).isSpace()) ++ i;
+				while (i < s.size() && s.at(i).isSpace()) ++ i;
+				if (i != s.size())
+					setVCursor(i, cursor_y);
+				else
+				{
+					setVCursor(0, cursor_y + 1);
+					s = widget->lineAtIndex(cursor_y);
+					while (i < s.size() && s.at(i).isSpace()) ++ i;
+					if (i != s.size())
+						setVCursor(i, cursor_y);
+				}
+			}
 				break;
 			case 'J':
 				if (cursor_y < widget->lineCount() - 1)
@@ -103,22 +120,19 @@ void FakeVim::executeCommandString(const QString &commands)
 				break;
 			case 'I':
 				editing_mode = EDITING_MODE_INSERT;
-				setCursor(0, cursor_y);
-				virtual_cursor_x = cursor_x;
+				setVCursor(0, cursor_y);
 				widget->setCursorType(VGAWidget::CURSOR_TYPE_INSERT);
 				break;
 			case 'O':
 				editing_mode = EDITING_MODE_INSERT;
 				widget->insertLineAtIndex("", cursor_y);
-				setCursor(0, cursor_y);
-				virtual_cursor_x = cursor_x;
+				setVCursor(0, cursor_y);
 				widget->setCursorType(VGAWidget::CURSOR_TYPE_INSERT);
 				break;
 			case 'o':
 				editing_mode = EDITING_MODE_INSERT;
 				widget->insertLineAtIndex("", cursor_y + 1);
-				setCursor(0, cursor_y + 1);
-				virtual_cursor_x = cursor_x;
+				setVCursor(0, cursor_y + 1);
 				widget->setCursorType(VGAWidget::CURSOR_TYPE_INSERT);
 				break;
 			case 'A':
@@ -126,8 +140,7 @@ void FakeVim::executeCommandString(const QString &commands)
 				break;
 			case 'a':
 				editing_mode = EDITING_MODE_INSERT;
-				setCursor(cursor_x + 1, cursor_y);
-				virtual_cursor_x = cursor_x;
+				setVCursor(cursor_x + 1, cursor_y);
 				widget->setCursorType(VGAWidget::CURSOR_TYPE_INSERT);
 				break;
 			case 'x':
@@ -136,8 +149,7 @@ void FakeVim::executeCommandString(const QString &commands)
 				if (cursor_x < s.size())
 					s = s.remove(cursor_x, getRepeatCount());
 				widget->setLineAtIndex(s, cursor_y);
-				setCursor(cursor_x, cursor_y);
-				virtual_cursor_x = cursor_x;
+				setVCursor(cursor_x, cursor_y);
 			}
 				break;
 			case 'j':
@@ -151,14 +163,14 @@ handle_up_arrow:
 			case '\b':
 			case 'h':
 handle_left_arrow:
-				setCursor(cursor_x - getRepeatCount(), cursor_y), virtual_cursor_x = cursor_x;
+				setVCursor(cursor_x - getRepeatCount(), cursor_y);
 				break;
 			case 'l':
 handle_right_arrow:
-				setCursor(cursor_x + getRepeatCount(), cursor_y), virtual_cursor_x = cursor_x;
+				setVCursor(cursor_x + getRepeatCount(), cursor_y);
 				break;
 			case '$':
-				setCursor(widget->lineAtIndex(cursor_y).size(), cursor_y), virtual_cursor_x = cursor_x;
+				setVCursor(widget->lineAtIndex(cursor_y).size(), cursor_y);
 				break;
 			}
 			break;

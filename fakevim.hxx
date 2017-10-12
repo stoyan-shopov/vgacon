@@ -13,6 +13,7 @@ private:
 	int cursor_x = 0, cursor_y = 0;
 	int virtual_cursor_x = 0;
 	void setCursor(int cell_x, int cell_y);
+	void setVCursor(int cell_x, int cell_y) { setCursor(cell_x, cell_y); virtual_cursor_x = cursor_x; }
 	enum EDITING_MODE
 	{
 		EDITING_MODE_COMMAND,
