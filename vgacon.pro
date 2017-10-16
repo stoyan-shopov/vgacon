@@ -67,3 +67,6 @@ MOBILITY =
 RESOURCES += \
     resources.qrc
 
+DISTFILES += \
+    init.fs
+

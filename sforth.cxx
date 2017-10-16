@@ -1,4 +1,6 @@
 #include <QLocalSocket>
+#include <QFile>
+
 extern "C"
 {
 #include "engine.h"
@@ -34,10 +36,13 @@ int sffseek(cell stream, long offset) { return -1; }
 
 void SForth::run()
 {
+	QFile f(":/init.fs");
 	sforth_socket = new QLocalSocket;
 	sforth_socket->connectToServer("vgacon");
 	sforth_socket->waitForConnected();
 	sf_reset();
+	f.open(QFile::ReadOnly);
+	sf_eval(f.readAll());
 	do_quit();
 }
 

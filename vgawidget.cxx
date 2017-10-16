@@ -33,7 +33,7 @@ uint8_t text_data[rows * columns], * t(text_data);
 	int row = 0;
 	while (line != text.cend() && row < rows)
 	{
-		memcpy(text_data + row * columns, line->toLocal8Bit().constData() + viewport_x, std::max(std::min(line->length() - viewport_x, columns), 0));
+		memcpy(text_data + row * columns, line->constData() + viewport_x, std::max(std::min(line->length() - viewport_x, columns), 0));
 		++ row;
 		++ line;
 	}

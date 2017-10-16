@@ -90,15 +90,15 @@ void FakeVim::executeCommandString(const QString &commands)
 			{
 				auto s = widget->lineAtIndex(cursor_y);
 				int i = cursor_x;
-				while (i < s.size() && !s.at(i).isSpace()) ++ i;
-				while (i < s.size() && s.at(i).isSpace()) ++ i;
+				while (i < s.size() && !QChar(s.at(i)).isSpace()) ++ i;
+				while (i < s.size() && QChar(s.at(i)).isSpace()) ++ i;
 				if (i != s.size())
 					setVCursor(i, cursor_y);
 				else
 				{
 					setVCursor(0, cursor_y + 1);
 					s = widget->lineAtIndex(cursor_y);
-					while (i < s.size() && s.at(i).isSpace()) ++ i;
+					while (i < s.size() && QChar(s.at(i)).isSpace()) ++ i;
 					if (i != s.size())
 						setVCursor(i, cursor_y);
 				}

@@ -49,6 +49,12 @@ QString s = ui->lineEdit->text();
 
 void MainWindow::socketReadyRead()
 {
+	if (0) while (vgacon_socket->bytesAvailable())
+	{
+		unsigned char c;
+		vgacon_socket->read(reinterpret_cast<char *>(& c), 1);
+		qDebug() << c;
+	}
 	while (vgacon_socket->canReadLine())
 		ui->vgaWidget->addLine(vgacon_socket->readLine());
 }
