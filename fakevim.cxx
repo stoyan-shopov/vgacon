@@ -56,7 +56,12 @@ void FakeVim::executeCommandString(const QString &commands)
 				break;
 			case '\b':
 				if (cursor_x)
-					executeCommandString(QString("\x1bxa") + LEFT_ARROW_CODE);
+				{
+					auto at_line_end = cursor_x == widget->lineAtIndex(cursor_y).size();
+					executeCommandString(QString("\x1bxi"));
+					if (at_line_end)
+						executeCommandString(QString(RIGHT_ARROW_CODE));
+				}
 				break;
 			case '\t':
 			{

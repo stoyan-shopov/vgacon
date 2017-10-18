@@ -13,10 +13,10 @@ class VGAWidget : public QWidget
 public:
 	VGAWidget(QWidget *parent = 0);
 public slots:
-	void clear(void) { text.clear(); repaint(); }
+	void clear(void) { text.clear(); update(); }
 	void setText(const QByteArray & data);
-	void addLine(const QByteArray & line) { text += line; greatest_text_line_length = std::max(greatest_text_line_length, line.length()); repaint(); }
-	void setLastLine(const QByteArray & line) { if (text.empty()) text += line; else * (text.end() - 1) = line; greatest_text_line_length = std::max(greatest_text_line_length, line.length()); repaint(); }
+	void addLine(const QByteArray & line) { text += line; greatest_text_line_length = std::max(greatest_text_line_length, line.length()); update(); }
+	void setLastLine(const QByteArray & line) { if (text.empty()) text += line; else * (text.end() - 1) = line; greatest_text_line_length = std::max(greatest_text_line_length, line.length()); update(); }
 	void setScale(int scale) { this->scale = scale ? scale : 1; update(); }
 public:
 	enum CURSOR_TYPE
@@ -32,14 +32,14 @@ public:
 			return;
 		this->text[line_number] = text;
 		greatest_text_line_length = std::max(greatest_text_line_length, text.length());
-		repaint();
+		update();
 	}
 	const QByteArray & lineAtIndex(int index) { return text.at(index); }
-	void setCursorXY(int x, int y) { cursor_x = x, cursor_y = y; repaint(); }
+	void setCursorXY(int x, int y) { cursor_x = x, cursor_y = y; update(); }
 	int lineCount(void) { return text.size(); }
-	void setCursorType(enum CURSOR_TYPE cursor_type) { this->cursor_type = cursor_type; repaint(); }
-	void insertLineAtIndex(const QByteArray & text, int index) { this->text.insert(index, text); repaint(); }
-	void removeLineAtIndex(int index) { text.removeAt(index); repaint(); }
+	void setCursorType(enum CURSOR_TYPE cursor_type) { this->cursor_type = cursor_type; update(); }
+	void insertLineAtIndex(const QByteArray & text, int index) { this->text.insert(index, text); update(); }
+	void removeLineAtIndex(int index) { text.removeAt(index); update(); }
 signals:
 	void cellSelected(int cell_x, int cell_y);
 private:
