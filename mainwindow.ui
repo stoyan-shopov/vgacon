@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,1,0">
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,1,0">
     <property name="spacing">
      <number>0</number>
     </property>
@@ -44,6 +44,13 @@
      </widget>
     </item>
     <item>
+     <widget class="VGALineEdit" name="widgetVGALineEdit" native="true">
+      <property name="focusPolicy">
+       <enum>Qt::ClickFocus</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="VGAWidget" name="vgaWidget" native="true">
       <property name="focusPolicy">
        <enum>Qt::ClickFocus</enum>
@@ -68,6 +75,12 @@
    <class>TouchKeyboard</class>
    <extends>QWidget</extends>
    <header>touchkeyboard.hxx</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>VGALineEdit</class>
+   <extends>QWidget</extends>
+   <header>vgalineedit.hxx</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

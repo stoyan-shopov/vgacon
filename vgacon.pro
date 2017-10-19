@@ -11,7 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = vgacon
 TEMPLATE = app
 DEFINES += CORE_CELLS_COUNT=128*1024 STACK_DEPTH=32
-INCLUDEPATH += sforth/
+INCLUDEPATH += sforth/ ./vga-widgets/
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked as deprecated (the exact warnings
@@ -39,7 +39,8 @@ SOURCES += \
     sforth.cxx \
     vgawidget.cxx \
     vgafont.cxx \
-    fakevim.cxx
+    fakevim.cxx \
+    vga-widgets/vgalineedit.cxx
 
 HEADERS += \
         mainwindow.hxx \
@@ -56,7 +57,8 @@ HEADERS += \
     sforth/sf-word-wizard.h \
     sforth.hxx \
     vgafont.hxx \
-    fakevim.hxx
+    fakevim.hxx \
+    vga-widgets/vgalineedit.hxx
 
 FORMS += \
         mainwindow.ui

@@ -42,12 +42,13 @@ public:
 	void removeLineAtIndex(int index) { text.removeAt(index); update(); }
 signals:
 	void cellSelected(int cell_x, int cell_y);
+protected:
+	int scaledFontHeight(void) const { return scale * vga_font.height(); }
+	int scaledFontWidth(void) const { return scale * vga_font.width(); }
 private:
 	enum CURSOR_TYPE cursor_type = CURSOR_TYPE_NAVIGATE;
 	int scale = 1;
 	int cursor_x = -1, cursor_y = -1;
-	int scaled_height(void) const { return scale * vga_font.height(); }
-	int scaled_width(void) const { return scale * vga_font.width(); }
 	int sel_x = -1, sel_y = -1;
 	int mouse_press_x, mouse_press_y;
 	QList<QByteArray> text;
@@ -76,7 +77,7 @@ private:
 
 protected:
 	void mouseMoveEvent(QMouseEvent * event) override;
-	void paintEvent(QPaintEvent * event) override;
+	virtual void paintEvent(QPaintEvent * event) override;
 	void mousePressEvent(QMouseEvent * event) override;
 };
 

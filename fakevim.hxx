@@ -7,7 +7,6 @@
 class FakeVim : public QObject
 {
 	Q_OBJECT
-
 private:
 	VGAWidget	* widget;
 	int cursor_x = 0, cursor_y = 0;
