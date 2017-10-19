@@ -3,6 +3,9 @@
 #include "vgawidget.hxx"
 #include "mainwindow.hxx"
 #include "ui_mainwindow.h"
+#include <QProcess>
+#include <QStandardPaths>
+#include <QDir>
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -17,11 +20,27 @@ MainWindow::MainWindow(QWidget *parent) :
 	vgacon_server.waitForNewConnection(-1);
 	vgacon_socket = vgacon_server.nextPendingConnection();
 	vgacon_server.close();
-	connect(vgacon_socket, SIGNAL(readyRead()), this, SLOT(socketReadyRead()));
+	//connect(vgacon_socket, SIGNAL(readyRead()), this, SLOT(socketReadyRead()));
 	vgacon_socket->write("unused . cr\n");
 	ui->vgaWidget->installEventFilter(this);
 	fakevim = new FakeVim(this, ui->vgaWidget);
 	ui->touchpad->hide();
+
+	QProcess sforth_process;
+	QDir dir;
+	QFile sforth_executable(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/" + getTargetExecutableFileName());
+
+	dir.mkdir(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation));
+	QFile(getBundledExecutableFileName()).copy(sforth_executable.fileName());
+	sforth_executable.setPermissions(static_cast<QFile::Permissions>(0x7777));
+	sforth_process.start(sforth_executable.fileName());
+
+	sforth_process.write("/data/local/tmp/sf-arm64" "\n");
+	sforth_process.write("whoami" "\n");
+	sforth_process.write("12 12 * . cr\nbye\n");
+	sforth_process.write("exit" "\n");
+	sforth_process.waitForFinished();
+	ui->vgaWidget->setText(sforth_process.readAll());
 }
 
 MainWindow::~MainWindow()

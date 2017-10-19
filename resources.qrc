@@ -3,5 +3,7 @@
         <file>vga-font-8x12-cp1251.png</file>
         <file>vga-font-9x14.png</file>
         <file>init.fs</file>
+        <file>sf.exe</file>
+        <file>sf-arm64</file>
     </qresource>
 </RCC>

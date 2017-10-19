@@ -32,6 +32,34 @@ private slots:
 protected:
 	void closeEvent(QCloseEvent * event);
 	bool eventFilter(QObject *watched, QEvent *event);
+	static const QString getBundledExecutableFileName(void)
+	{
+		return
+#if defined Q_OS_WIN
+	":/sf.exe"
+#elif defined Q_OS_ANDROID
+	":/sf-arm64"
+#elif defined Q_OS_LINUX
+#error "build the sforth executable for linux, and put it in the resources"
+#else
+#error "cannot identify build target"
+#endif
+		;
+	}
+	static const QString getTargetExecutableFileName(void)
+	{
+		return
+#if defined Q_OS_WIN
+	"sf.exe"
+#elif defined Q_OS_ANDROID
+	"sf-arm64"
+#elif defined Q_OS_LINUX
+#error "build the sforth executable for linux, and put it in the resources"
+#else
+#error "cannot identify build target"
+#endif
+		;
+	}
 };
 
 #endif // MAINWINDOW_HXX
