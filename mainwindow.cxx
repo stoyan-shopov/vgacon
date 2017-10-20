@@ -1,11 +1,11 @@
 #include <QDebug>
 #include <QKeyEvent>
+#include <QStandardPaths>
+#include <QMessageBox>
+#include <QDir>
+
 #include "vgawidget.hxx"
 #include "mainwindow.hxx"
-#include "ui_mainwindow.h"
-#include <QProcess>
-#include <QStandardPaths>
-#include <QDir>
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -26,21 +26,16 @@ MainWindow::MainWindow(QWidget *parent) :
 	fakevim = new FakeVim(this, ui->vgaWidget);
 	ui->touchpad->hide();
 
-	QProcess sforth_process;
 	QDir dir;
-	QFile sforth_executable(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/" + getTargetExecutableFileName());
+	sforth_executable.setFileName(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/" + getTargetExecutableFileName());
 
 	dir.mkdir(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation));
 	QFile(getBundledExecutableFileName()).copy(sforth_executable.fileName());
 	sforth_executable.setPermissions(static_cast<QFile::Permissions>(0x7777));
-	sforth_process.start(sforth_executable.fileName());
-
-	sforth_process.write("/data/local/tmp/sf-arm64" "\n");
-	sforth_process.write("whoami" "\n");
-	sforth_process.write("12 12 * . cr\nbye\n");
-	sforth_process.write("exit" "\n");
-	sforth_process.waitForFinished();
-	ui->vgaWidget->setText(sforth_process.readAll());
+	connect(& sforth_process, & QProcess::readyReadStandardError, [=] { ui->vgaWidget->appendText(sforth_process.readAllStandardError()); });
+	connect(& sforth_process, & QProcess::readyReadStandardOutput, [=] { ui->vgaWidget->appendText(sforth_process.readAllStandardOutput()); });
+	connect(& sforth_process, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(sforthProcessFinished(int,QProcess::ExitStatus)));
+	startSforthProcess();
 }
 
 MainWindow::~MainWindow()
@@ -68,24 +63,28 @@ QString s = ui->lineEdit->text();
 
 void MainWindow::socketReadyRead()
 {
-	if (0) while (vgacon_socket->bytesAvailable())
-	{
-		unsigned char c;
-		vgacon_socket->read(reinterpret_cast<char *>(& c), 1);
-		qDebug() << c;
-	}
 	while (vgacon_socket->canReadLine())
 		ui->vgaWidget->addLine(vgacon_socket->readLine());
 }
 
 void MainWindow::on_lineEdit_returnPressed()
 {
-	vgacon_socket->write((ui->lineEdit->text() + '\n').toLocal8Bit());
+	sforth_process.write((ui->lineEdit->text() + '\n').toLocal8Bit());
 	ui->lineEdit->clear();
+}
+
+void MainWindow::sforthProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
+{
+	qDebug() << sforth_process.state();
+	if(exitStatus == QProcess::CrashExit && QMessageBox::critical(this, "sforth process crashed", "the sforth process crashed\ndo you want to restart it?", QMessageBox::Yes, QMessageBox::No)
+				== QMessageBox::Yes)
+		startSforthProcess();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+	sforth_process.kill();
+	sforth_process.waitForFinished();
 	vgacon_socket->close();
 	sforth.wait();
 }

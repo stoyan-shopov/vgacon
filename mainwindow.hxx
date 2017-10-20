@@ -4,8 +4,11 @@
 #include <QMainWindow>
 #include <QLocalServer>
 #include <QLocalSocket>
+#include <QProcess>
+#include <QFile>
 #include "sforth.hxx"
 #include "fakevim.hxx"
+#include "ui_mainwindow.h"
 
 namespace Ui {
 class MainWindow;
@@ -25,10 +28,14 @@ private:
 	QLocalSocket	* vgacon_socket;
 	SForth		sforth;
 	FakeVim		* fakevim;
+	QProcess	sforth_process;
+	QFile sforth_executable;
+	void startSforthProcess(void) { sforth_process.start(sforth_executable.fileName()); sforth_process.write("true cr-echo !\n"); }
 private slots:
 	void touchpadPressed(uint8_t character_code);
 	void socketReadyRead(void);
 	void on_lineEdit_returnPressed();
+	void sforthProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
 protected:
 	void closeEvent(QCloseEvent * event);
 	bool eventFilter(QObject *watched, QEvent *event);
