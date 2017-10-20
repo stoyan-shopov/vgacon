@@ -6,7 +6,6 @@
 #include <QMouseEvent>
 #include "vgawidget.hxx"
 
-
 VGAWidget::VGAWidget(QWidget *parent)
 	: QWidget(parent)
 {
@@ -26,17 +25,28 @@ void VGAWidget::paintEvent(QPaintEvent *event)
 {
 const int rows = height() / scaledFontHeight(), columns = width() / scaledFontWidth();
 QPixmap px(columns * scaledFontWidth(), rows * scaledFontHeight());
-uint8_t text_data[rows * columns], * t(text_data);
+QByteArray text_data(rows * columns, ' '), foreground_colors(rows * columns, static_cast<char>(DEFAULT_VGA_COLOR)), background_colors(rows * columns, static_cast<char>(DEFAULT_VGA_COLOR));
+char * t, * fc, * bc;
 
-	memset(text_data, ' ', sizeof text_data);
 	auto line = textLines.cbegin() + viewport_y;
 	int row = 0;
 	while (line != textLines.cend() && row < rows)
 	{
-		memcpy(text_data + row * columns, line->constData() + viewport_x, std::max(std::min(line->length() - viewport_x, columns), 0));
+		memcpy(text_data.data() + row * columns, line->constData() + viewport_x, std::max(std::min(line->length() - viewport_x, columns), 0));
+		if (color_map.contains(row))
+		{
+			fc = foreground_colors.data() + row * columns;
+			bc = background_colors.data() + row * columns;
+			auto colors = color_map[row];
+			auto c = colors.constBegin() + viewport_x;
+			while (c != colors.constEnd())
+				* fc ++ = c->first, * bc ++ = c->second, ++ c;
+		}
 		++ row;
 		++ line;
 	}
+	foreground_colors.replace(static_cast<char>(DEFAULT_VGA_COLOR), static_cast<char>(foreground_color));
+	background_colors.replace(static_cast<char>(DEFAULT_VGA_COLOR), static_cast<char>(background_color));
 	/*
 	auto l = (text.size() > rows) ? text.cend() - rows : text.cbegin();
 	while (l != text.cend())
@@ -45,13 +55,15 @@ uint8_t text_data[rows * columns], * t(text_data);
 
 	QPainter p(& px);
 	p.fillRect(0, 0, px.width(), px.height(), background_color);
-	t = text_data;
+	t = text_data.data();
+	fc = foreground_colors.data();
+	bc = background_colors.data();
 	for (int y = 0; y < rows; y ++)
 		for (int x = 0; x < columns; x ++)
 		{
 			QImage i, si;
 			p.drawImage(x * scaledFontWidth(), y * scaledFontHeight(),
-				    si = (i = vga_font.imageForCharacter(* t ++, (x == sel_x && y == sel_y) ? VGAFont::YELLOW : VGAFont::CYAN, background_color))
+				    si = (i = vga_font.imageForCharacter(* t ++, (x == sel_x && y == sel_y) ? VGAFont::YELLOW : * fc ++ , * bc ++))
 							.scaled(scaledFontWidth(), scaledFontHeight()));
 		}
 	QPen pen(Qt::red);
@@ -85,7 +97,6 @@ uint8_t text_data[rows * columns], * t(text_data);
 	pen = QPen(hasFocus() ? Qt::magenta : Qt::green);
 	painter.setPen(pen);
 	painter.drawRect(px.rect().adjusted(0, 0, -1, -1));
-	qDebug() << viewport_x << viewport_y << greatest_text_line_length;
 }
 
 void VGAWidget::mousePressEvent(QMouseEvent *event)

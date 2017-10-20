@@ -9,6 +9,10 @@ VGAButton::VGAButton(QWidget *parent) : VGAWidget(parent)
 	setHorizontalAlignment(CENTER);
 	setVerticalAlignment(CENTER);
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+	auto & c = colorMap()[0];
+	c.clear();
+	c << QPair<VGAFont::VGA_COLOR_CODE, VGAFont::VGA_COLOR_CODE>(VGAFont::RED, VGAFont::BRIGHT_CYAN);
+	update();
 }
 
 void VGAButton::mouseMoveEvent(QMouseEvent *event)
