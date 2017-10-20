@@ -10,8 +10,7 @@ VGALineEdit::VGALineEdit(QWidget *parent) : VGAWidget(parent)
 	setText("Lorem ipsum dolor sit amet");
 	setCursorXY(text().size(), 0);
 	setCursorType(CURSOR_TYPE_INSERT);
-	connect(this, VGAWidget::cellSelected, this, [=] (int x, int y) { setCursorXY(x, y); clampCursorX(); });
-	show();
+	connect(this, VGAWidget::cellSelected, this, [=] (int x, int y) { setCursorXY(x, 0); clampCursorX(); });
 }
 
 void VGALineEdit::keyPressEvent(QKeyEvent * event)

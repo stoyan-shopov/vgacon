@@ -11,6 +11,8 @@ public:
 	VGAButton(QWidget * parent);
 signals:
 	void clicked(void);
+public slots:
+	virtual void setText(const QByteArray & data) override { VGAWidget::setText(data); setMinimumWidth(scaledFontWidth() * (lineAtIndex(0).size() + 2)); }
 protected:
 	void mouseMoveEvent(QMouseEvent * event);
 	void mousePressEvent(QMouseEvent * event);

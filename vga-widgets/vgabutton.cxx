@@ -4,8 +4,7 @@
 VGAButton::VGAButton(QWidget *parent) : VGAWidget(parent)
 {
 	setText("123");
-	setMinimumWidth(scaledFontWidth() * (lineAtIndex(0).size() + 2));
-	setMinimumHeight(scaledFontHeight() * 2);
+	setMinimumHeight(scaledFontHeight() * 1.5);
 	setHorizontalAlignment(CENTER);
 	setVerticalAlignment(CENTER);
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
