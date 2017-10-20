@@ -3,7 +3,9 @@
 VGALineEdit::VGALineEdit(QWidget *parent) : VGAWidget(parent)
 {
 	setMinimumWidth(scaledFontWidth() * 10);
-	setMinimumHeight(scaledFontHeight() * 1);
+	setMinimumHeight(scaledFontHeight() * 1.5);
+	setVerticalAlignment(CENTER);
+	setHorizontalAlignment(CENTER);
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
 	setText("Lorem ipsum dolor sit amet");
 	setCursorXY(text().size(), 0);

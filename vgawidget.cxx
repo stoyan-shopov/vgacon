@@ -24,7 +24,7 @@ void VGAWidget::setText(const QByteArray &data)
 void VGAWidget::paintEvent(QPaintEvent *event)
 {
 const int rows = height() / scaledFontHeight(), columns = width() / scaledFontWidth();
-QPixmap px(columns * scaledFontWidth(), rows * scaledFontHeight());
+QPixmap px(width(), height());
 QByteArray text_data(rows * columns, ' '), foreground_colors(rows * columns, static_cast<char>(DEFAULT_VGA_COLOR)), background_colors(rows * columns, static_cast<char>(DEFAULT_VGA_COLOR));
 char * t, * fc, * bc;
 
