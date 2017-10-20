@@ -13,7 +13,7 @@ class VGAWidget : public QWidget
 public:
 	VGAWidget(QWidget *parent = 0);
 public slots:
-	virtual void clear(void) { textLines.clear(); viewport_x = viewport_y = cursor_x = cursor_y = 0; update(); }
+	virtual void clear(void) { textLines.clear(); setLastLine(""); viewport_x = viewport_y = cursor_x = cursor_y = 0; update(); }
 	virtual void setText(const QByteArray & data);
 	void addLine(const QByteArray & line) { textLines += line; greatest_text_line_length = std::max(greatest_text_line_length, line.length()); update(); }
 	void setLastLine(const QByteArray & line) { if (textLines.empty()) textLines += line; else * (textLines.end() - 1) = line; greatest_text_line_length = std::max(greatest_text_line_length, line.length()); update(); }
