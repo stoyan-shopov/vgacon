@@ -19,7 +19,7 @@ public slots:
 	void setLastLine(const QByteArray & line) { if (textLines.empty()) textLines += line; else * (textLines.end() - 1) = line; greatest_text_line_length = std::max(greatest_text_line_length, line.length()); update(); }
 	void setScale(int scale) { this->scale = scale ? scale : 1; update(); }
 	void appendText(const QByteArray & text)
-	{ if (text.isEmpty()) return; auto lines = text.split('\n'); auto l = lines.constBegin(); if (textLines.isEmpty()) addLine(""); do { textLines.last() += * l; if (++ l != lines.constEnd()) addLine(""); } while (l != lines.constEnd()); update(); }
+	{ if (text.isEmpty()) return; auto lines = text.split('\n'); auto l = lines.constBegin(); if (textLines.isEmpty()) addLine(""); do { setLastLine(textLines.last() + * l); if (++ l != lines.constEnd()) addLine(""); } while (l != lines.constEnd()); update(); }
 public:
 	enum CURSOR_TYPE
 	{

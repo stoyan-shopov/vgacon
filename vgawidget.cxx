@@ -85,6 +85,7 @@ uint8_t text_data[rows * columns], * t(text_data);
 	pen = QPen(hasFocus() ? Qt::magenta : Qt::green);
 	painter.setPen(pen);
 	painter.drawRect(px.rect().adjusted(0, 0, -1, -1));
+	qDebug() << viewport_x << viewport_y << greatest_text_line_length;
 }
 
 void VGAWidget::mousePressEvent(QMouseEvent *event)
