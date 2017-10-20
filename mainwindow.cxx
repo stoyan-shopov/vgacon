@@ -35,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(& sforth_process, & QProcess::readyReadStandardError, [=] { ui->vgaWidget->appendText(sforth_process.readAllStandardError()); });
 	connect(& sforth_process, & QProcess::readyReadStandardOutput, [=] { ui->vgaWidget->appendText(sforth_process.readAllStandardOutput()); });
 	connect(& sforth_process, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(sforthProcessFinished(int,QProcess::ExitStatus)));
+	connect(ui->widgetVGALineEdit, VGALineEdit::returnPressed, this, [=] { sforth_process.write(ui->widgetVGALineEdit->text().toLocal8Bit() + '\n'); sforth_process.waitForBytesWritten(); ui->widgetVGALineEdit->clear(); });
 	startSforthProcess();
 }
 
@@ -83,6 +84,7 @@ void MainWindow::sforthProcessFinished(int exitCode, QProcess::ExitStatus exitSt
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+	disconnect(& sforth_process, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(sforthProcessFinished(int,QProcess::ExitStatus)));
 	sforth_process.kill();
 	sforth_process.waitForFinished();
 	vgacon_socket->close();

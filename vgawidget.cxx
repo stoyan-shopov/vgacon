@@ -15,10 +15,10 @@ VGAWidget::VGAWidget(QWidget *parent)
 void VGAWidget::setText(const QByteArray &data)
 {
 	auto lines = data.split('\n');
-	text.clear();
+	textLines.clear();
 	greatest_text_line_length = 0;
 	for (auto l : lines)
-		text << l, greatest_text_line_length = std::max(greatest_text_line_length, l.size());
+		textLines << l, greatest_text_line_length = std::max(greatest_text_line_length, l.size());
 	update();
 }
 
@@ -29,9 +29,9 @@ QPixmap px(columns * scaledFontWidth(), rows * scaledFontHeight());
 uint8_t text_data[rows * columns], * t(text_data);
 
 	memset(text_data, ' ', sizeof text_data);
-	auto line = text.cbegin() + viewport_y;
+	auto line = textLines.cbegin() + viewport_y;
 	int row = 0;
-	while (line != text.cend() && row < rows)
+	while (line != textLines.cend() && row < rows)
 	{
 		memcpy(text_data + row * columns, line->constData() + viewport_x, std::max(std::min(line->length() - viewport_x, columns), 0));
 		++ row;
@@ -58,19 +58,19 @@ uint8_t text_data[rows * columns], * t(text_data);
 	/* draw cursor */
 	p.setPen(pen);
 	p.drawRect((cursor_x - viewport_x) * scaledFontWidth(), (cursor_y - viewport_y) * scaledFontHeight(), (cursor_type == CURSOR_TYPE_NAVIGATE) ? scaledFontWidth() : 1, scaledFontHeight());
-	pen = QPen(Qt::yellow);
-	p.setPen(pen);
-	auto margin_x = (greatest_text_line_length - viewport_x) * scaledFontWidth(), margin_y = (text.size() - viewport_y) * scaledFontHeight();
-	p.drawLine(0, margin_y, margin_x, margin_y);
-	p.drawLine(margin_x, 0, margin_x, margin_y);
+	if (draw_margin)
+	{
+		pen = QPen(Qt::yellow);
+		p.setPen(pen);
+		auto margin_x = (greatest_text_line_length - viewport_x) * scaledFontWidth(), margin_y = (textLines.size() - viewport_y) * scaledFontHeight();
+		p.drawLine(0, margin_y, margin_x, margin_y);
+		p.drawLine(margin_x, 0, margin_x, margin_y);
+	}
 	QPainter painter(this);
 	painter.drawPixmap(0, 0, px);
-	if (hasFocus())
-	{
-		pen = QPen(Qt::magenta);
-		painter.setPen(pen);
-		painter.drawRect(px.rect().adjusted(0, 0, -1, -1));
-	}
+	pen = QPen(hasFocus() ? Qt::magenta : Qt::green);
+	painter.setPen(pen);
+	painter.drawRect(px.rect().adjusted(0, 0, -1, -1));
 }
 
 void VGAWidget::mousePressEvent(QMouseEvent *event)
@@ -90,6 +90,6 @@ int d;
 		viewport_x -= d / scaledFontWidth(), viewport_x = std::max(viewport_x, 0), viewport_x = std::min(viewport_x, greatest_text_line_length - 1), mouse_press_x = event->pos().x();
 	d = event->pos().y() - mouse_press_y;
 	if (std::abs(d) >= scaledFontHeight())
-		viewport_y -= d / scaledFontHeight(), viewport_y = std::max(viewport_y, 0), viewport_y = std::min(viewport_y, text.size() - 1), mouse_press_y = event->pos().y();
+		viewport_y -= d / scaledFontHeight(), viewport_y = std::max(viewport_y, 0), viewport_y = std::min(viewport_y, textLines.size() - 1), mouse_press_y = event->pos().y();
 	update();
 }
