@@ -27,7 +27,7 @@ CGA	EGA	VGA	RGB	Web	Example
 0xE	0x3E	63,63,21	255,255,85	#ffff55	yellow
 0xF	0x3F	63,63,63	255,255,255	#ffffff	white
 */
-	enum
+	enum VGA_COLOR_CODE
 	{
 		BLACK, BLUE, GREEN, CYAN, RED, MAGENTA, BROWN, GRAY, DARK_GRAY, BRIGHT_BLUE, BRIGHT_GREEN, BRIGHT_CYAN, BRIGHT_RED, BRIGHT_MAGENTA, YELLOW, WHITE,
 		COLOR_CODES_COUNT,
@@ -39,7 +39,7 @@ CGA	EGA	VGA	RGB	Web	Example
 	};
 	int width(void) const { return VGA_FONT_WIDTH; }
 	int height(void) const { return VGA_FONT_HEIGHT; }
-	QRgb vgaRGBColor(unsigned palette_index) const { return color_codes[std::min(palette_index, sizeof color_codes / sizeof * color_codes - 1)]; }
+	static QRgb vgaRGBColor(unsigned palette_index) { return color_codes[std::min(palette_index, sizeof color_codes / sizeof * color_codes - 1)]; }
 	QImage imageForCharacter(uint8_t character_code, int foreground_color_code, int background_color_code);
 private:
 	static const QRgb color_codes[COLOR_CODES_COUNT];

@@ -40,7 +40,8 @@ SOURCES += \
     vgawidget.cxx \
     vgafont.cxx \
     fakevim.cxx \
-    vga-widgets/vgalineedit.cxx
+    vga-widgets/vgalineedit.cxx \
+    vga-widgets/vgabutton.cxx
 
 HEADERS += \
         mainwindow.hxx \
@@ -58,7 +59,8 @@ HEADERS += \
     sforth.hxx \
     vgafont.hxx \
     fakevim.hxx \
-    vga-widgets/vgalineedit.hxx
+    vga-widgets/vgalineedit.hxx \
+    vga-widgets/vgabutton.hxx
 
 FORMS += \
         mainwindow.ui

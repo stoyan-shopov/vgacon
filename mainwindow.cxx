@@ -36,6 +36,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(& sforth_process, & QProcess::readyReadStandardOutput, [=] { ui->vgaWidget->appendText(sforth_process.readAllStandardOutput()); });
 	connect(& sforth_process, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(sforthProcessFinished(int,QProcess::ExitStatus)));
 	connect(ui->widgetVGALineEdit, VGALineEdit::returnPressed, this, [=] { sforth_process.write(ui->widgetVGALineEdit->text().toLocal8Bit() + '\n'); sforth_process.waitForBytesWritten(); ui->widgetVGALineEdit->clear(); });
+	ui->widgetVGAButtonClear->setText("Clear");
+	connect(ui->widgetVGAButtonClear, VGAButton::clicked, this, [=] { ui->vgaWidget->clear(); });
 	startSforthProcess();
 }
 

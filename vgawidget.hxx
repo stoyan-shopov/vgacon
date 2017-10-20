@@ -26,6 +26,14 @@ public:
 		CURSOR_TYPE_INSERT,
 		CURSOR_TYPE_NAVIGATE,
 	};
+	enum ALIGNMENT
+	{
+		CENTER,
+		LEFT,
+		TOP = LEFT,
+		RIGHT,
+		DOWN = RIGHT,
+	};
 
 	void setLineAtIndex(const QByteArray & text, int line_number)
 	{ /*! \todo - why doesn't this work ???
@@ -43,6 +51,9 @@ public:
 	void setCursorType(enum CURSOR_TYPE cursor_type) { this->cursor_type = cursor_type; update(); }
 	void insertLineAtIndex(const QByteArray & text, int index) { textLines.insert(index, text); update(); }
 	void removeLineAtIndex(int index) { textLines.removeAt(index); update(); }
+	void setBackgroundColor(VGAFont::VGA_COLOR_CODE color) { if (background_color != color) background_color = color, update(); }
+	void setVerticalAlignment(enum ALIGNMENT alignment) { vertical_alignment = alignment; }
+	void setHorizontalAlignment(enum ALIGNMENT alignment) { horizontal_alignment = alignment; }
 signals:
 	void cellSelected(int cell_x, int cell_y);
 protected:
@@ -50,6 +61,7 @@ protected:
 	int scaledFontWidth(void) const { return scale * vga_font.width(); }
 	int cursor_x = -1, cursor_y = -1;
 private:
+	enum ALIGNMENT horizontal_alignment = LEFT, vertical_alignment = TOP;
 	bool draw_margin = false;
 	enum CURSOR_TYPE cursor_type = CURSOR_TYPE_NAVIGATE;
 	int scale = 1;
@@ -57,6 +69,7 @@ private:
 	int mouse_press_x, mouse_press_y;
 	QList<QByteArray> textLines;
 	int greatest_text_line_length = 0;
+	VGAFont::VGA_COLOR_CODE background_color = VGAFont::BLACK;
 	/* these hold the viewport origin (the top left corner coordinates of the viewport) that this widget currently displays;
 	 * the text lines in the 'text' list define a text view of some width and height, the viewport is
 	 * a view inside this (usually larger than can be displayed at once) text view, i.e.:
@@ -80,9 +93,9 @@ private:
 	int viewport_x = 0, viewport_y = 0;
 
 protected:
-	void mouseMoveEvent(QMouseEvent * event) override;
+	virtual void mouseMoveEvent(QMouseEvent * event) override;
 	virtual void paintEvent(QPaintEvent * event) override;
-	void mousePressEvent(QMouseEvent * event) override;
+	virtual void mousePressEvent(QMouseEvent * event) override;
 };
 
 #endif // VGAWIDGET_HXX
